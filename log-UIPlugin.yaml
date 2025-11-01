@@ -1,0 +1,12 @@
+apiVersion: observability.openshift.io/v1alpha1
+kind: UIPlugin
+metadata:
+  name: logging
+  resourceVersion: '3052540'
+  uid: c384c6a0-98fb-4c4a-8427-c0d4e11cd2d0
+spec:
+  logging:
+    lokiStack:
+      name: logging-loki
+      namespace: openshift-logging
+  type: Logging
