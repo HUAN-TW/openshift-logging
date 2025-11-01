@@ -1,4 +1,5 @@
 # serviceaccount 與 role logging-collector-write-logs binding
+
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
