@@ -1,0 +1,64 @@
+apiVersion: observability.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: ileven
+  namespace: openshift-logging
+spec:
+  filters:
+    - drop:
+        - test:
+            - field: .objectRef.resource
+              matches: clusterserviceversions
+      name: ocp-audit-filter
+      type: drop
+  inputs:
+    - application: {}
+      name: platform-app-logs
+      type: application
+    - audit:
+        sources:
+          - auditd
+          - ovn
+      name: platform-audit-logs
+      type: audit
+    - infrastructure:
+        sources:
+          - container
+          - node
+      name: platform-infra-logs
+      type: infrastructure
+  managementState: Managed
+  outputs:
+    - lokiStack:
+        authentication:
+          token:
+            from: serviceAccount
+        target:
+          name: logging-loki
+          namespace: openshift-logging
+      name: lokistack-out
+      tls:
+        ca:
+          configMapName: openshift-service-ca.crt
+          key: service-ca.crt
+      type: lokiStack
+  pipelines:
+    - filterRefs:
+        - ocp-audit-filter
+      inputRefs:
+        - platform-infra-logs
+      name: filter-audit-log-store
+      outputRefs:
+        - lokistack-out
+    - inputRefs:
+        - platform-app-logs
+      name: enable-default-app-log-store
+      outputRefs:
+        - lokistack-out
+    - inputRefs:
+        - platform-infra-logs
+      name: enable-default-infra-log-store
+      outputRefs:
+        - lokistack-out
+  serviceAccount:
+    name: logcollector
