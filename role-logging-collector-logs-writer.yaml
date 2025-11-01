@@ -1,0 +1,17 @@
+# role 有權限寫入 application/infrastructure/audit 的log 到loki
+
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: logging-collector-logs-writer
+rules:
+  - verbs:
+      - create
+    apiGroups:
+      - loki.grafana.com
+    resources:
+      - application
+      - audit
+      - infrastructure
+    resourceNames:
+      - logs
